@@ -1,0 +1,10 @@
+*
+!.gitignore
+!Assets/
+!Assets/**
+!ProjectSettings/
+!ProjectSettings/**
+!*.md
+!*.txt
+*.log
+!*.pdf
