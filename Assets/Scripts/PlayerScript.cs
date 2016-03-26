@@ -36,7 +36,8 @@ public class PlayerScript : MonoBehaviour
     public GameObject PlayerCamera;
     private Camera playerCamera;
     private Text scoreText;
-    
+    private LineRenderer reticle;
+
     public Transform Muzzle;
     public GameObject Bullet;
     public float FireRate;
@@ -90,6 +91,28 @@ public class PlayerScript : MonoBehaviour
         playerPrefix = "P" + PlayerNumber;
 
         scoreText = gameObject.GetComponentInChildren<Text>();
+
+        SetUpTargetingReticle();
+    }
+
+
+    private void SetUpTargetingReticle()
+    {
+        reticle = gameObject.GetComponentInChildren<LineRenderer>();
+        
+        //reticle.SetVertexCount(100);
+
+        Vector3[] positions = new Vector3[100];
+        
+        for (int i = 0; i < positions.Length; i++)
+        {
+            positions[i].x = 0;
+            float t = i * .25f;
+            t = t * t;
+            positions[i].y = -.5f * 9.81f * t;
+            positions[i].z = i * 50 * .25f;
+        }
+        reticle.SetPositions(positions);
     }
 
     // Update is called once per frame
@@ -101,6 +124,9 @@ public class PlayerScript : MonoBehaviour
         Fire();
     }
 
+    /// <summary>
+    /// Controls the movement of the tank based on input
+    /// </summary>
     void Drive()
     {
         float turn = Input.GetAxisRaw(playerPrefix + "Turn");// *Time.deltaTime;
@@ -124,6 +150,9 @@ public class PlayerScript : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Controls the rotation of the turret based on input
+    /// </summary>
     private void Look()
     {
         float rotateInput = Input.GetAxisRaw(playerPrefix + "Rotate");
@@ -135,6 +164,9 @@ public class PlayerScript : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Controls the height of the cannon based on input
+    /// </summary>
     private void Aim()
     {
         float aimInput = Input.GetAxisRaw(playerPrefix + "Aim") * -1;
@@ -150,6 +182,9 @@ public class PlayerScript : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Fires a bullet on input if reload is finished
+    /// </summary>
     private void Fire()
     {
         if (Input.GetButtonDown(playerPrefix + "Fire"))
@@ -167,6 +202,11 @@ public class PlayerScript : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Takes <paramref name="damage"/> points of damage, modified by armor
+    /// </summary>
+    /// <param name="damage">Points of damage to take</param>
+    /// <returns>True if tank was destroyed</returns>
     public bool TakeDamage(int damage)
     {
         bool died = false;
