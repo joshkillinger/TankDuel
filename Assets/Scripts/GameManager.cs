@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
@@ -11,6 +12,8 @@ public class GameManager : MonoBehaviour
     private PlayerScript[] playerScripts;
 
     public GameObject ExplosionEffect;
+    public GameObject GlobalMessageText;
+    private Text globalMessageText;
 
     private static GameManager instance = null;
 
@@ -44,6 +47,9 @@ public class GameManager : MonoBehaviour
             players[i] = (GameObject)GameObject.Instantiate((Object)PlayerPrefabs[i], playerSpawnPoints[i].transform.position, playerSpawnPoints[i].transform.rotation);
             playerScripts[i] = players[i].GetComponent<PlayerScript>();
         }
+
+        globalMessageText = GlobalMessageText.GetComponent<Text>();
+        StartCoroutine(SetGlobalMessage("GO!", 2f));
     }
 
     public void Explode(Vector3 location, GameObject owner, float damage)
@@ -60,8 +66,19 @@ public class GameManager : MonoBehaviour
             {
                 //score kill for owner
                 owner.GetComponent<PlayerScript>().Kills++;
-                Debug.Log(owner.tag + " scored a kill!");
+                string message = owner.tag + " killed " + playerScripts[i].tag + "!";
+                StartCoroutine(SetGlobalMessage(message, 3f));
+                Debug.Log(message);
             }
         }
+    }
+
+    public IEnumerator SetGlobalMessage(string message, float time)
+    {
+        globalMessageText.text = message;
+
+        yield return new WaitForSeconds(time);
+
+        globalMessageText.text = "";
     }
 }

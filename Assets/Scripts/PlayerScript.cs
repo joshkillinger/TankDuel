@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.UI;
 
 public class PlayerScript : MonoBehaviour
 {
@@ -12,10 +13,19 @@ public class PlayerScript : MonoBehaviour
     private int hp = 100;
     private int armor = 10;
 
-    public int Kills = 0;
+    private int kills = 0;
+    public int Kills
+    {
+        get { return kills; }
+        set
+        {
+            kills = value;
+            scoreText.text = "Score: " + kills.ToString();
+        }
+    }
     public int Deaths = 0;
 
-    private Rigidbody rigidbody;
+    private Rigidbody rigidBody;
 
     public WheelCollider[] Wheels;
     public Transform Turret;
@@ -24,7 +34,8 @@ public class PlayerScript : MonoBehaviour
     public float MinGunAngle;
 
     public GameObject PlayerCamera;
-    private Camera camera;
+    private Camera playerCamera;
+    private Text scoreText;
     
     public Transform Muzzle;
     public GameObject Bullet;
@@ -36,8 +47,8 @@ public class PlayerScript : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        rigidbody = GetComponent<Rigidbody>();
-        rigidbody.centerOfMass = new Vector3(0, -.25f, 0);
+        rigidBody = GetComponent<Rigidbody>();
+        rigidBody.centerOfMass = new Vector3(0, -.25f, 0);
         lastFire = 0;
 
         int players = GameManager.Instance.NumberOfPlayers;
@@ -73,10 +84,12 @@ public class PlayerScript : MonoBehaviour
                 break;
         }
 
-        camera = PlayerCamera.GetComponent<Camera>();
-        camera.rect = camRect;
+        playerCamera = PlayerCamera.GetComponent<Camera>();
+        playerCamera.rect = camRect;
 
         playerPrefix = "P" + PlayerNumber;
+
+        scoreText = gameObject.GetComponentInChildren<Text>();
     }
 
     // Update is called once per frame

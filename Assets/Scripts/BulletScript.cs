@@ -5,16 +5,16 @@ public class BulletScript : MonoBehaviour
 {
     public GameObject Owner;
 
-    public float Speed = 100;
+    public float Speed = 50;
     public float Damage = 200;
 
-    private Rigidbody rigidbody;
+    private Rigidbody rigidBody;
 
     // Use this for initialization
     void Start()
     {
-        rigidbody = GetComponent<Rigidbody>();
-        rigidbody.velocity = gameObject.transform.forward * Speed;
+        rigidBody = GetComponent<Rigidbody>();
+        rigidBody.velocity = gameObject.transform.forward * Speed;
     }
 
     void OnCollisionEnter(Collision collision)
