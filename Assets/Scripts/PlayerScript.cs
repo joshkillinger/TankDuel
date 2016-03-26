@@ -3,7 +3,8 @@ using System.Collections;
 
 public class PlayerScript : MonoBehaviour
 {
-    public float PlayerNumber = 1;
+    public int PlayerNumber = 1;
+    private string playerPrefix;
     public float EnginePower = 1000;
     public float LookSpeed = 90;
     public float AimSpeed = 20;
@@ -21,6 +22,9 @@ public class PlayerScript : MonoBehaviour
     public GameObject Gun;
     public float MaxGunAngle;
     public float MinGunAngle;
+
+    public GameObject PlayerCamera;
+    private Camera camera;
     
     public Transform Muzzle;
     public GameObject Bullet;
@@ -35,6 +39,44 @@ public class PlayerScript : MonoBehaviour
         rigidbody = GetComponent<Rigidbody>();
         rigidbody.centerOfMass = new Vector3(0, -.25f, 0);
         lastFire = 0;
+
+        int players = GameManager.Instance.NumberOfPlayers;
+        
+        Rect camRect = new Rect();
+        camRect.width = players > 2 ? .5f: 1f;
+        camRect.height = .5f;
+
+        switch (PlayerNumber)
+        {
+            case 1:
+                camRect.x = 0;
+                camRect.y = .5f;
+                break;
+
+            case 2:
+                camRect.x = players < 3 ? 0f : .5f;
+                camRect.y = players < 3 ? 0f : .5f;
+                break;
+
+            case 3:
+                camRect.x = 0f;
+                camRect.y = 0f;
+                break;
+
+            case 4:
+                camRect.x = .5f;
+                camRect.y = 0f;
+                break;
+
+            default:
+                Debug.LogError("Invalid player number of " + PlayerNumber + " detected!");
+                break;
+        }
+
+        camera = PlayerCamera.GetComponent<Camera>();
+        camera.rect = camRect;
+
+        playerPrefix = "P" + PlayerNumber;
     }
 
     // Update is called once per frame
@@ -48,8 +90,8 @@ public class PlayerScript : MonoBehaviour
 
     void Drive()
     {
-        float turn = Input.GetAxisRaw("P1Turn");// *Time.deltaTime;
-        float drive = Input.GetAxisRaw("P1Drive") * -1;// *Time.deltaTime;
+        float turn = Input.GetAxisRaw(playerPrefix + "Turn");// *Time.deltaTime;
+        float drive = Input.GetAxisRaw(playerPrefix + "Drive") * -1;// *Time.deltaTime;
         float leftDrive = Mathf.Clamp(drive + turn, -1, 1) * EnginePower;
         float rightDrive = Mathf.Clamp(drive - turn, -1, 1) * EnginePower;
 
@@ -71,7 +113,7 @@ public class PlayerScript : MonoBehaviour
 
     private void Look()
     {
-        float rotateInput = Input.GetAxisRaw("P1Rotate");
+        float rotateInput = Input.GetAxisRaw(playerPrefix + "Rotate");
         float rotate = rotateInput * LookSpeed * Time.deltaTime * -1;
 
         if (rotate != 0)
@@ -82,7 +124,7 @@ public class PlayerScript : MonoBehaviour
 
     private void Aim()
     {
-        float aimInput = Input.GetAxisRaw("P1Aim") * -1;
+        float aimInput = Input.GetAxisRaw(playerPrefix + "Aim") * -1;
         float aim = aimInput * AimSpeed * Time.deltaTime;
         float currentAim = Gun.transform.localEulerAngles.y;
         aim += currentAim;
@@ -97,7 +139,7 @@ public class PlayerScript : MonoBehaviour
 
     private void Fire()
     {
-        if (Input.GetButtonDown("P1Fire"))
+        if (Input.GetButtonDown(playerPrefix + "Fire"))
         {
             if ((lastFire + FireRate) <= Time.time)
             {

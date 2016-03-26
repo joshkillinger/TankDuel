@@ -5,7 +5,7 @@ public class BulletScript : MonoBehaviour
 {
     public GameObject Owner;
 
-    public float Speed = 500;
+    public float Speed = 100;
     public float Damage = 200;
 
     private Rigidbody rigidbody;
