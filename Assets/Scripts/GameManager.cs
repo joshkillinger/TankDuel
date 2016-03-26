@@ -62,7 +62,7 @@ public class GameManager : MonoBehaviour
         {
             float distance = Vector3.SqrMagnitude(players[i].transform.position - location) / 2;
             float power = damage / distance;
-            if (playerScripts[i].TakeDamage((int)power))
+            if (playerScripts[i].TakeDamage((int)power, location))
             {
                 //score kill for owner
                 owner.GetComponent<PlayerScript>().Kills++;

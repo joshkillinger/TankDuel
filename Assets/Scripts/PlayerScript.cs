@@ -10,7 +10,8 @@ public class PlayerScript : MonoBehaviour
     public float LookSpeed = 90;
     public float AimSpeed = 20;
 
-    private int hp = 100;
+    public static int maxHP = 30;
+    private int hp = 0;
     private int armor = 10;
 
     private int kills = 0;
@@ -93,6 +94,8 @@ public class PlayerScript : MonoBehaviour
         scoreText = gameObject.GetComponentInChildren<Text>();
 
         SetUpTargetingReticle();
+
+        hp = maxHP;
     }
 
 
@@ -118,6 +121,9 @@ public class PlayerScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (hp <= 0)
+            return;
+
         Drive();
         Look();
         Aim();
@@ -207,14 +213,18 @@ public class PlayerScript : MonoBehaviour
     /// </summary>
     /// <param name="damage">Points of damage to take</param>
     /// <returns>True if tank was destroyed</returns>
-    public bool TakeDamage(int damage)
+    public bool TakeDamage(int damage, Vector3 source)
     {
+        if (hp <= 0) return false;
+
         bool died = false;
         damage -= armor;
         damage = Mathf.Max(0, damage);
         hp -= damage;
 
         Debug.Log(gameObject.tag + " took " + damage + " damage! " + hp + " hp remaining.");
+
+        rigidBody.AddExplosionForce(damage * 100.0f, source, 0f, 2.0f, ForceMode.Impulse);
 
         if (hp <= 0)
         {
