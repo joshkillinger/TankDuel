@@ -68,6 +68,7 @@ public class GameManager : MonoBehaviour
                 owner.GetComponent<PlayerScript>().Kills++;
                 string message = owner.tag + " killed " + playerScripts[i].tag + "!";
                 StartCoroutine(SetGlobalMessage(message, 3f));
+                StartCoroutine(Respawn(playerScripts[i]));
                 Debug.Log(message);
             }
         }
@@ -80,5 +81,12 @@ public class GameManager : MonoBehaviour
         yield return new WaitForSeconds(time);
 
         globalMessageText.text = "";
+    }
+
+    private IEnumerator Respawn(PlayerScript player)
+    {
+        yield return new WaitForSeconds(3f);
+
+        player.Respawn(playerSpawnPoints[Random.Range(0, playerSpawnPoints.Length - 1)].transform);
     }
 }

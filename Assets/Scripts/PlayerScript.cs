@@ -236,4 +236,13 @@ public class PlayerScript : MonoBehaviour
 
         return died;
     }
+
+    public void Respawn(Transform location)
+    {
+        hp = maxHP;
+        gameObject.transform.position = location.position;
+        gameObject.transform.rotation = location.rotation;
+        rigidBody.velocity = new Vector3();
+        rigidBody.angularVelocity = new Vector3();
+    }
 }
