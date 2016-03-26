@@ -73,8 +73,11 @@ public class PlayerScript : MonoBehaviour
     {
         float rotateInput = Input.GetAxisRaw("P1Rotate");
         float rotate = rotateInput * LookSpeed * Time.deltaTime * -1;
-        rotate += Turret.localEulerAngles.x;
-        Turret.localEulerAngles = new Vector3(rotate, Turret.localEulerAngles.y, Turret.localEulerAngles.z);
+
+        if (rotate != 0)
+        {
+            Turret.Rotate(new Vector3(1,0, 0), rotate, Space.Self);
+        }
     }
 
     private void Aim()
