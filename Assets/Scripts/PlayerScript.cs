@@ -98,7 +98,9 @@ public class PlayerScript : MonoBehaviour
         hp = maxHP;
     }
 
-
+    /// <summary>
+    /// Creates the vertices for the targeting laser
+    /// </summary>
     private void SetUpTargetingReticle()
     {
         reticle = gameObject.GetComponentInChildren<LineRenderer>();
@@ -137,17 +139,31 @@ public class PlayerScript : MonoBehaviour
     {
         float turn = Input.GetAxisRaw(playerPrefix + "Turn");// *Time.deltaTime;
         float drive = Input.GetAxisRaw(playerPrefix + "Drive") * -1;// *Time.deltaTime;
+        float brake = Input.GetAxisRaw(playerPrefix + "Brake");
         float leftDrive = Mathf.Clamp(drive + turn, -1, 1) * EnginePower;
         float rightDrive = Mathf.Clamp(drive - turn, -1, 1) * EnginePower;
 
-        int i = 0;
-        for (i = 0; i < 2; i++)
+        if (brake > 0.01)
         {
-            Wheels[i].motorTorque = leftDrive;
+            for (int i = 0; i < 4; i++)
+            {
+                Wheels[i].motorTorque = 0;
+                Wheels[i].brakeTorque = EnginePower * 10;
+            }
         }
-        for (i = 2; i < 4; i++)
+        else
         {
-            Wheels[i].motorTorque = rightDrive;
+            int i = 0;
+            for (i = 0; i < 2; i++)
+            {
+                Wheels[i].brakeTorque = 0;
+                Wheels[i].motorTorque = leftDrive;
+            }
+            for (i = 2; i < 4; i++)
+            {
+                Wheels[i].brakeTorque = 0;
+                Wheels[i].motorTorque = rightDrive;
+            }
         }
 
         if (DebugOn)
