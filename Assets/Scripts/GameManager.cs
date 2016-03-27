@@ -15,6 +15,8 @@ public class GameManager : MonoBehaviour
     public GameObject GlobalMessageText;
     private Text globalMessageText;
 
+    private int maxScore;
+
     private static GameManager instance = null;
 
     public static GameManager Instance
@@ -37,19 +39,46 @@ public class GameManager : MonoBehaviour
             instance = this;
         }
 
+        SetupInfo setupInfo = GameObject.FindGameObjectWithTag("SetupInfo").GetComponent<SetupInfo>();
+        NumberOfPlayers = setupInfo.PlayerNames.Count;
+
         players = new GameObject[NumberOfPlayers];
-        //PlayerSpawnPoints = new GameObject[NumberOfPlayers];
-        //playerSpawnPoints = GameObject.FindGameObjectsWithTag("Respawn");
         playerScripts = new PlayerScript[NumberOfPlayers];
 
         for (int i = 0; i < NumberOfPlayers; i++)
         {
             players[i] = (GameObject)GameObject.Instantiate((Object)PlayerPrefabs[i], playerSpawnPoints[i].position, playerSpawnPoints[i].rotation);
+            players[i].name = setupInfo.PlayerNames[i];
             playerScripts[i] = players[i].GetComponent<PlayerScript>();
         }
 
         globalMessageText = GlobalMessageText.GetComponent<Text>();
         StartCoroutine(SetGlobalMessage("GO!", 2f));
+
+        maxScore = setupInfo.MaxScore;
+
+        GameObject.Destroy(setupInfo.gameObject);
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        if (Input.GetAxisRaw("Exit") > .1)
+        {
+            EndLevel();
+        }
+    }
+
+    /// <summary>
+    /// Exits the game
+    /// </summary>
+    private void EndLevel()
+    {
+        #if UNITY_EDITOR
+            UnityEditor.EditorApplication.isPlaying = false;
+        #else
+            Application.Quit();
+        #endif
     }
 
     public void Explode(Vector3 location, GameObject owner, float damage)
@@ -66,7 +95,7 @@ public class GameManager : MonoBehaviour
             {
                 //score kill for owner
                 owner.GetComponent<PlayerScript>().Kills++;
-                string message = owner.tag + " killed " + playerScripts[i].tag + "!";
+                string message = owner.name + " killed " + playerScripts[i].name + "!";
                 StartCoroutine(SetGlobalMessage(message, 3f));
                 StartCoroutine(Respawn(playerScripts[i]));
                 Debug.Log(message);
@@ -87,6 +116,27 @@ public class GameManager : MonoBehaviour
     {
         yield return new WaitForSeconds(3f);
 
+        CheckForMaxScore();
+
         player.Respawn(playerSpawnPoints[Random.Range(0, playerSpawnPoints.Length - 1)]);
+    }
+
+    private void CheckForMaxScore()
+    {
+        bool maxReached = false;
+        foreach (PlayerScript p in playerScripts)
+        {
+            if (p.Kills >= maxScore)
+            {
+                maxReached = true;
+                break;
+            }
+        }
+
+        //go to score screen
+        if (maxReached)
+        {
+            EndLevel();
+        }
     }
 }
