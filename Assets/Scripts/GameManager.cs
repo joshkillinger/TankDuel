@@ -8,7 +8,7 @@ public class GameManager : MonoBehaviour
     public GameObject[] PlayerPrefabs;
     public int NumberOfPlayers = 1;
     private GameObject[] players;
-    private GameObject[] playerSpawnPoints;
+    public Transform[] playerSpawnPoints;
     private PlayerScript[] playerScripts;
 
     public GameObject ExplosionEffect;
@@ -39,12 +39,12 @@ public class GameManager : MonoBehaviour
 
         players = new GameObject[NumberOfPlayers];
         //PlayerSpawnPoints = new GameObject[NumberOfPlayers];
-        playerSpawnPoints = GameObject.FindGameObjectsWithTag("Respawn");
+        //playerSpawnPoints = GameObject.FindGameObjectsWithTag("Respawn");
         playerScripts = new PlayerScript[NumberOfPlayers];
 
         for (int i = 0; i < NumberOfPlayers; i++)
         {
-            players[i] = (GameObject)GameObject.Instantiate((Object)PlayerPrefabs[i], playerSpawnPoints[i].transform.position, playerSpawnPoints[i].transform.rotation);
+            players[i] = (GameObject)GameObject.Instantiate((Object)PlayerPrefabs[i], playerSpawnPoints[i].position, playerSpawnPoints[i].rotation);
             playerScripts[i] = players[i].GetComponent<PlayerScript>();
         }
 
@@ -87,6 +87,6 @@ public class GameManager : MonoBehaviour
     {
         yield return new WaitForSeconds(3f);
 
-        player.Respawn(playerSpawnPoints[Random.Range(0, playerSpawnPoints.Length - 1)].transform);
+        player.Respawn(playerSpawnPoints[Random.Range(0, playerSpawnPoints.Length - 1)]);
     }
 }
