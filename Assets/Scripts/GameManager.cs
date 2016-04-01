@@ -16,6 +16,7 @@ public class GameManager : MonoBehaviour
     private Text globalMessageText;
 
     private int maxScore;
+    public GameObject ResultsPrefab;
 
     private static GameManager instance = null;
 
@@ -74,11 +75,13 @@ public class GameManager : MonoBehaviour
     /// </summary>
     private void EndLevel()
     {
-        #if UNITY_EDITOR
-            UnityEditor.EditorApplication.isPlaying = false;
-        #else
-            Application.Quit();
-        #endif
+        GameResults results = GameObject.Instantiate<GameObject>(ResultsPrefab).GetComponent<GameResults>();
+        foreach (PlayerScript player in playerScripts)
+        {
+            results.AddScore(player.name, player.Kills);
+        }
+
+        Application.LoadLevel("score");
     }
 
     public void Explode(Vector3 location, GameObject owner, float damage)
